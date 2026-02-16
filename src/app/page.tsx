@@ -20,24 +20,24 @@ export default function BakeryProApp() {
 
   return (
     <AuthGuard>
-      <div className="min-h-screen bg-bakery-cream text-bakery-dark flex flex-col pb-24 font-sans antialiased">
+      <div className="min-h-screen bg-claude-bg text-claude-dark flex flex-col pb-24 font-sans antialiased">
         {showSettings && <SettingsView onClose={() => setShowSettings(false)} />}
         
-        <header className="p-4 flex justify-between items-center bg-white border-b border-bakery-light sticky top-0 z-20 shadow-sm-soft">
+        <header className="p-4 flex justify-between items-center bg-white border-b border-claude-light sticky top-0 z-20 shadow-soft">
           <div>
-            <h1 className="font-serif text-xl font-bold text-bakery-dark">Boulangerie<span className="text-bakery-accent">Pro</span></h1>
+            <h1 className="font-serif text-xl font-bold text-claude-dark">Boulangerie<span className="text-claude-accent">Pro</span></h1>
           </div>
           <div className="flex gap-2">
             <button 
               onClick={() => setShowSettings(true)}
-              className="p-2 bg-bakery-beige rounded-full text-bakery-dark active:scale-90 transition-transform hover:bg-bakery-tan"
+              className="p-2 bg-claude-light rounded-full text-claude-dark active:scale-90 transition-transform hover:bg-claude-light/80"
               aria-label="Paramètres"
             >
               <Settings size={18} />
             </button>
             <button 
               onClick={logout}
-              className="p-2 bg-bakery-light rounded-full text-bakery-error active:scale-90 transition-transform hover:bg-bakery-light/80"
+              className="p-2 bg-claude-light rounded-full text-claude-error active:scale-90 transition-transform hover:bg-claude-light/80"
               aria-label="Déconnexion"
             >
               <LogOut size={18} />

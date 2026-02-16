@@ -33,10 +33,10 @@ export default function RootLayout({
     <html lang="fr">
       <head>
         <meta charSet="utf-8" />
-        <meta name="theme-color" content="#FFFBF7" />
+        <meta name="theme-color" content="#FFFFFF" />
         <meta name="mobile-web-app-capable" content="yes" />
       </head>
-      <body className="antialiased bg-bakery-cream text-bakery-dark selection:bg-bakery-accent selection:text-white font-sans">
+      <body className="bg-claude-bg text-claude-dark antialiased">
         {children}
       </body>
     </html>

@@ -84,7 +84,11 @@ export const useBakeryStore = create<BakeryState>()(
       // Auth state
       isLoggedIn: false,
       currentUser: null,
-      users: [],
+      users: [
+        { id: '1', email: 'baker1@test.com', name: 'Hassan Boulanger', pin: '1234', createdAt: Date.now() - 86400000 },
+        { id: '2', email: 'baker2@test.com', name: 'Aminata Pain', pin: '5678', createdAt: Date.now() - 43200000 },
+        { id: '3', email: 'baker3@test.com', name: 'Kofi Formation', pin: '0000', createdAt: Date.now() },
+      ],
 
       // Default user data
       activeTab: 'labo',
