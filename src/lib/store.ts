@@ -3,6 +3,14 @@ import { persist } from 'zustand/middleware';
 
 export type TabType = 'labo' | 'recettes' | 'marche' | 'finance';
 
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  pin: string;
+  createdAt: number;
+}
+
 export interface MarketPrices {
   farinePrice: number;
   beurrePrice: number;
@@ -23,9 +31,7 @@ export interface Recipe {
   date: number;
 }
 
-interface BakeryState {
-  isLoggedIn: boolean;
-  pin: string;
+interface UserData {
   activeTab: TabType;
   editingId: string | null;
   total: number;
@@ -36,8 +42,29 @@ interface BakeryState {
   levure: number;
   market: MarketPrices;
   recipes: Recipe[];
+}
+
+interface BakeryState {
+  // Auth
+  isLoggedIn: boolean;
+  currentUser: User | null;
+  users: User[];
+  
+  // User data - persisted per user
+  activeTab: TabType;
+  editingId: string | null;
+  total: number;
+  farine: number;
+  beurre: number;
+  sucre: number;
+  sel: number;
+  levure: number;
+  market: MarketPrices;
+  recipes: Recipe[];
+  
   // Actions
-  login: (pin: string) => boolean;
+  signup: (email: string, name: string, pin: string) => boolean;
+  login: (email: string, pin: string) => boolean;
   logout: () => void;
   updatePin: (newPin: string) => void;
   setActiveTab: (tab: TabType) => void;
@@ -54,8 +81,12 @@ interface BakeryState {
 export const useBakeryStore = create<BakeryState>()(
   persist(
     (set, get) => ({
-      isLoggedIn: false, // Toujours false au démarrage à cause du partialize
-      pin: "0000",
+      // Auth state
+      isLoggedIn: false,
+      currentUser: null,
+      users: [],
+
+      // Default user data
       activeTab: 'labo',
       editingId: null,
       total: 700,
@@ -64,16 +95,105 @@ export const useBakeryStore = create<BakeryState>()(
       sucre: 100,
       sel: 2,
       levure: 5,
-      market: { farinePrice: 24000, beurrePrice: 18000, sucrePrice: 28000, sellingPrice: 150, yieldPerBatch: 10 },
+      market: { 
+        farinePrice: 24000, 
+        beurrePrice: 18000, 
+        sucrePrice: 28000, 
+        sellingPrice: 150, 
+        yieldPerBatch: 10 
+      },
       recipes: [],
 
-      login: (inputPin) => {
-        const success = inputPin === get().pin;
-        if (success) set({ isLoggedIn: true });
-        return success;
+      signup: (email, name, pin) => {
+        const state = get();
+        
+        // Vérifier si l'email existe déjà
+        if (state.users.find(u => u.email === email)) {
+          return false;
+        }
+
+        // Créer nouvel utilisateur
+        const newUser: User = {
+          id: crypto.randomUUID(),
+          email,
+          name,
+          pin,
+          createdAt: Date.now(),
+        };
+
+        // Ajouter l'utilisateur et se connecter automatiquement
+        set({
+          users: [...state.users, newUser],
+          currentUser: newUser,
+          isLoggedIn: true,
+          // Réinitialiser les données utilisateur
+          total: 700,
+          farine: 400,
+          beurre: 200,
+          sucre: 100,
+          sel: 2,
+          levure: 5,
+          recipes: [],
+          editingId: null,
+          activeTab: 'labo',
+        });
+
+        return true;
       },
-      logout: () => set({ isLoggedIn: false }),
-      updatePin: (newPin) => set({ pin: newPin }),
+
+      login: (email, pin) => {
+        const state = get();
+        const user = state.users.find(u => u.email === email && u.pin === pin);
+
+        if (!user) return false;
+
+        // Récupérer les données sauvegardées de cet utilisateur (si elles existent)
+        // Pour l'instant, on réinitialise (dans un vrai système, on chargerait depuis une BD)
+        set({
+          currentUser: user,
+          isLoggedIn: true,
+          total: 700,
+          farine: 400,
+          beurre: 200,
+          sucre: 100,
+          sel: 2,
+          levure: 5,
+          recipes: [],
+          editingId: null,
+          activeTab: 'labo',
+        });
+
+        return true;
+      },
+
+      logout: () => set({ 
+        isLoggedIn: false, 
+        currentUser: null,
+        total: 700,
+        farine: 400,
+        beurre: 200,
+        sucre: 100,
+        sel: 2,
+        levure: 5,
+        recipes: [],
+        editingId: null,
+        activeTab: 'labo',
+      }),
+
+      updatePin: (newPin) => {
+        const state = get();
+        if (!state.currentUser) return;
+
+        const updatedUser = {
+          ...state.currentUser,
+          pin: newPin,
+        };
+
+        set({
+          currentUser: updatedUser,
+          users: state.users.map(u => u.id === state.currentUser!.id ? updatedUser : u),
+        });
+      },
 
       setActiveTab: (tab) => set({ activeTab: tab }),
 
@@ -112,7 +232,12 @@ export const useBakeryStore = create<BakeryState>()(
         const newRecipe: Recipe = {
           id,
           name: name || "Nouvelle Recette",
-          total: s.total, farine: s.farine, beurre: s.beurre, sucre: s.sucre, sel: s.sel, levure: s.levure,
+          total: s.total, 
+          farine: s.farine, 
+          beurre: s.beurre, 
+          sucre: s.sucre, 
+          sel: s.sel, 
+          levure: s.levure,
           date: Date.now()
         };
         const recipes = s.editingId 
@@ -121,9 +246,26 @@ export const useBakeryStore = create<BakeryState>()(
         set({ recipes, editingId: id });
       },
 
-      deleteRecipe: (id) => set((s) => ({ recipes: s.recipes.filter(r => r.id !== id), editingId: s.editingId === id ? null : s.editingId })),
-      loadRecipe: (r) => set({ ...r, editingId: r.id, activeTab: 'labo' }),
-      resetLabo: () => set({ editingId: null, total: 700, farine: 400, beurre: 200, sucre: 100, sel: 2, levure: 5 }),
+      deleteRecipe: (id) => set((s) => ({ 
+        recipes: s.recipes.filter(r => r.id !== id), 
+        editingId: s.editingId === id ? null : s.editingId 
+      })),
+
+      loadRecipe: (r) => set({ 
+        ...r, 
+        editingId: r.id, 
+        activeTab: 'labo' 
+      }),
+
+      resetLabo: () => set({ 
+        editingId: null, 
+        total: 700, 
+        farine: 400, 
+        beurre: 200, 
+        sucre: 100, 
+        sel: 2, 
+        levure: 5 
+      }),
 
       calculateProfit: () => {
         const { farine, beurre, sucre, market } = get();
@@ -133,11 +275,14 @@ export const useBakeryStore = create<BakeryState>()(
       }
     }),
     { 
-      name: 'bakery-pro-storage-v5',
-      // SOLUTION INTÉGRALE : On filtre l'état pour ne pas sauver isLoggedIn
+      name: 'bakery-pro-storage-v6',
       partialize: (state) => {
-        const { isLoggedIn, ...rest } = state;
-        return rest;
+        // Ne pas sauver l'état de connexion pour la sécurité
+        const { isLoggedIn, currentUser, ...rest } = state;
+        return {
+          ...rest,
+          users: state.users, // Sauver la liste des utilisateurs (données non sensibles)
+        };
       }
     }
   )

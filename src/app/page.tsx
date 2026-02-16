@@ -20,23 +20,25 @@ export default function BakeryProApp() {
 
   return (
     <AuthGuard>
-      <div className="min-h-screen bg-anthropic-beige text-anthropic-charcoal flex flex-col pb-24 font-sans antialiased">
+      <div className="min-h-screen bg-bakery-cream text-bakery-dark flex flex-col pb-24 font-sans antialiased">
         {showSettings && <SettingsView onClose={() => setShowSettings(false)} />}
         
-        <header className="p-4 flex justify-between items-center bg-white border-b border-stone-200 sticky top-0 z-20">
+        <header className="p-4 flex justify-between items-center bg-white border-b border-bakery-light sticky top-0 z-20 shadow-sm-soft">
           <div>
-            <h1 className="font-serif text-xl font-bold text-anthropic-charcoal">Boulangerie<span className="text-anthropic-accent">Pro</span></h1>
+            <h1 className="font-serif text-xl font-bold text-bakery-dark">Boulangerie<span className="text-bakery-accent">Pro</span></h1>
           </div>
           <div className="flex gap-2">
             <button 
               onClick={() => setShowSettings(true)}
-              className="p-2 bg-anthropic-beige rounded-full text-anthropic-charcoal active:scale-90 transition-transform"
+              className="p-2 bg-bakery-beige rounded-full text-bakery-dark active:scale-90 transition-transform hover:bg-bakery-tan"
+              aria-label="Paramètres"
             >
               <Settings size={18} />
             </button>
             <button 
               onClick={logout}
-              className="p-2 bg-stone-100 rounded-full text-red-400 active:scale-90 transition-transform"
+              className="p-2 bg-bakery-light rounded-full text-bakery-error active:scale-90 transition-transform hover:bg-bakery-light/80"
+              aria-label="Déconnexion"
             >
               <LogOut size={18} />
             </button>
