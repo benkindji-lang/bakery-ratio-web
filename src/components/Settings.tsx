@@ -15,6 +15,7 @@ export function SettingsView({ onClose }: { onClose: () => void }) {
     if (currentInput === pin && pin !== "") {
       setStep('new');
       setError(false);
+      setCurrentInput("");
     } else {
       setError(true);
       setTimeout(() => setError(false), 800);
@@ -24,46 +25,63 @@ export function SettingsView({ onClose }: { onClose: () => void }) {
   return (
     <div className="fixed inset-0 z-[110] bg-claude-bg flex flex-col p-6 animate-in slide-in-from-bottom duration-300">
       <div className="flex justify-between items-center mb-8">
-        <h2 className="text-2xl font-bold text-claude-dark">Sécurité</h2>
-        <button onClick={onClose} className="p-3 bg-claude-light rounded-full text-claude-dark hover:bg-claude-light/80"><X size={20}/></button>
+        <h2 className="font-serif text-3xl font-bold text-claude-dark tracking-tight">Sécurité</h2>
+        <button onClick={onClose} className="p-3 bg-claude-userBubble rounded-2xl text-claude-accent border border-claude-gray">
+          <X size={24}/>
+        </button>
       </div>
 
-      <div className="bg-white rounded-3xl p-8 shadow-soft border border-claude-light">
-        <div className="flex justify-center mb-6">
-          <div className="p-4 bg-claude-light rounded-3xl text-claude-accent">
-            <ShieldCheck size={32} />
+      <div className="bg-claude-userBubble rounded-[2.5rem] p-8 shadow-soft border border-claude-gray">
+        <div className="flex justify-center mb-8">
+          <div className="p-5 bg-claude-bg rounded-3xl text-claude-accent border border-claude-gray">
+            <ShieldCheck size={40} strokeWidth={1.5} />
           </div>
         </div>
 
         {step === 'verify' ? (
-          <div className="space-y-4">
-            <p className="text-center text-sm font-bold text-claude-gray uppercase tracking-widest">Code Actuel</p>
+          <div className="space-y-6">
+            <div className="text-center space-y-1">
+              <p className="text-[10px] font-black text-claude-muted uppercase tracking-[0.3em]">Authentification</p>
+              <p className="text-sm font-bold text-claude-dark">Entrez votre code actuel</p>
+            </div>
             <input
               type="password"
+              inputMode="numeric"
               maxLength={4}
               value={currentInput}
-              onChange={(e) => setCurrentInput(e.target.value)}
-              className={`w-full bg-claude-light p-6 rounded-2xl text-center text-3xl tracking-[0.5em] focus:outline-none border-2 transition-all ${error ? 'border-claude-error animate-shake' : 'border-transparent focus:border-claude-accent'} text-claude-dark`}
+              onChange={(e) => setCurrentInput(e.target.value.replace(/\D/g, ""))}
+              className={`w-full bg-claude-bg p-6 rounded-2xl text-center text-4xl tracking-[0.5em] focus:outline-none border-2 transition-all ${
+                error ? 'border-claude-error animate-shake' : 'border-claude-gray focus:border-claude-accent'
+              } text-claude-dark font-serif`}
               autoFocus
             />
-            <button onClick={handleVerify} className="w-full bg-claude-dark text-white py-5 rounded-2xl font-bold hover:bg-claude-dark/90">Vérifier</button>
+            <button 
+              onClick={handleVerify} 
+              className="w-full bg-claude-dark text-claude-bg py-5 rounded-2xl font-black uppercase text-xs tracking-[0.2em] shadow-lg active:scale-95 transition-all"
+            >
+              Vérifier l'Identité
+            </button>
           </div>
         ) : (
-          <div className="space-y-4">
-            <p className="text-center text-sm font-bold text-claude-gray uppercase tracking-widest">Nouveau Code PIN</p>
+          <div className="space-y-6">
+            <div className="text-center space-y-1">
+              <p className="text-[10px] font-black text-claude-accent uppercase tracking-[0.3em]">Nouveau PIN</p>
+              <p className="text-sm font-bold text-claude-dark">Définissez 4 chiffres de sécurité</p>
+            </div>
             <input
               type="password"
+              inputMode="numeric"
               maxLength={4}
               value={newPin}
-              onChange={(e) => setNewPin(e.target.value)}
-              className="w-full bg-claude-light p-6 rounded-2xl text-center text-3xl tracking-[0.5em] focus:outline-none border-2 border-claude-accent/30 text-claude-dark"
+              onChange={(e) => setNewPin(e.target.value.replace(/\D/g, ""))}
+              className="w-full bg-claude-bg p-6 rounded-2xl text-center text-4xl tracking-[0.5em] focus:outline-none border-2 border-claude-accent/30 text-claude-dark font-serif"
               autoFocus
             />
             <button 
               onClick={() => { updatePin(newPin); onClose(); }} 
-              className="w-full bg-claude-success text-white py-5 rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-claude-success/90"
+              className="w-full bg-claude-accent text-claude-bg py-5 rounded-2xl font-black uppercase text-xs tracking-[0.2em] flex items-center justify-center gap-3 shadow-lg active:scale-95 transition-all"
             >
-              <Save size={20}/> Sauvegarder
+              <Save size={18} strokeWidth={3}/> Mettre à jour
             </button>
           </div>
         )}

@@ -1,1 +1,30 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Neutralisation totale des styles par défaut de Next.js */
+:root {
+  --foreground-rgb: 43, 30, 22;
+  --background-start-rgb: 249, 248, 246;
+  --background-end-rgb: 249, 248, 246;
+}
+
+/* On force le corps de la page sur notre Marron BakeryPro */
+body {
+  background-color: #231915 !important; /* Marron Chocolat */
+  color: #F2EBE3 !important;           /* Texte Crème */
+  margin: 0;
+  padding: 0;
+}
+
+/* Empêche les navigateurs de forcer le blanc sur les inputs */
+input, select, textarea, button {
+  background-color: transparent;
+  color: inherit;
+  border-color: #3D2E28;
+}
+
+/* Suppression des bordures blanches fantômes */
+* {
+  border-color: #3D2E28;
+}

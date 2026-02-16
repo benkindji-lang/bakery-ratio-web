@@ -60,11 +60,11 @@ export function LoginSignup() {
   };
 
   return (
-    <div className="min-h-screen bg-claude-bg flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen bg-claude-bg text-claude-dark flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-[340px]">
         {/* Header Compact */}
         <div className="text-center mb-6">
-          <div className="inline-flex p-3 bg-claude-gray/30 rounded-2xl mb-3 text-claude-accent">
+          <div className="inline-flex p-3 bg-claude-userBubble rounded-2xl mb-3 text-claude-accent border border-claude-gray shadow-soft">
             <ShieldCheck size={28} strokeWidth={1.5} />
           </div>
           <h1 className="font-serif text-3xl font-bold text-claude-dark tracking-tighter">
@@ -75,12 +75,14 @@ export function LoginSignup() {
           </p>
         </div>
 
-        {/* Toggle Mode ultra-compact */}
-        <div className="flex bg-claude-gray/20 rounded-xl p-1 mb-4 border border-claude-gray">
+        {/* Toggle Mode (Zéro Blanc) */}
+        <div className="flex bg-claude-userBubble rounded-xl p-1 mb-4 border border-claude-gray">
           <button
             onClick={() => { setMode("login"); setError(""); }}
             className={`flex-1 py-1.5 rounded-lg text-[11px] font-bold uppercase transition-all ${
-              mode === "login" ? "bg-white text-claude-dark shadow-sm" : "text-claude-muted"
+              mode === "login" 
+                ? "bg-claude-bg text-claude-dark shadow-sm" 
+                : "text-claude-muted"
             }`}
           >
             Connexion
@@ -88,17 +90,20 @@ export function LoginSignup() {
           <button
             onClick={() => { setMode("signup"); setError(""); }}
             className={`flex-1 py-1.5 rounded-lg text-[11px] font-bold uppercase transition-all ${
-              mode === "signup" ? "bg-white text-claude-dark shadow-sm" : "text-claude-muted"
+              mode === "signup" 
+                ? "bg-claude-bg text-claude-dark shadow-sm" 
+                : "text-claude-muted"
             }`}
           >
             Inscription
           </button>
         </div>
 
-        <div className="bg-white rounded-2xl p-5 shadow-soft border border-claude-gray">
+        {/* Card Formulaire (Chocolat Profond) */}
+        <div className="bg-claude-userBubble rounded-2xl p-5 shadow-soft border border-claude-gray">
           {error && (
-            <div className="mb-4 p-2.5 bg-claude-error/5 border border-claude-error/20 rounded-xl text-center">
-              <p className="text-claude-error text-[11px] font-bold">{error}</p>
+            <div className="mb-4 p-2.5 bg-claude-error/10 border border-claude-error/20 rounded-xl text-center">
+              <p className="text-claude-error text-[11px] font-bold uppercase tracking-wider">{error}</p>
             </div>
           )}
 
@@ -112,7 +117,7 @@ export function LoginSignup() {
                     type="text" 
                     value={signupName} 
                     onChange={(e) => setSignupName(e.target.value)} 
-                    className="w-full pl-9 pr-4 py-2.5 bg-claude-bg rounded-xl text-sm focus:ring-1 ring-claude-accent outline-none border border-claude-gray transition-all" 
+                    className="w-full pl-9 pr-4 py-2.5 bg-claude-bg rounded-xl text-sm text-claude-dark focus:ring-1 ring-claude-accent outline-none border border-claude-gray transition-all placeholder:text-claude-muted/30" 
                     placeholder="Artisan Boulanger"
                   />
                 </div>
@@ -127,7 +132,7 @@ export function LoginSignup() {
                   type="email" 
                   value={mode === "login" ? loginEmail : signupEmail} 
                   onChange={(e) => mode === "login" ? setLoginEmail(e.target.value) : setSignupEmail(e.target.value)} 
-                  className="w-full pl-9 pr-4 py-2.5 bg-claude-bg rounded-xl text-sm focus:ring-1 ring-claude-accent outline-none border border-claude-gray transition-all" 
+                  className="w-full pl-9 pr-4 py-2.5 bg-claude-bg rounded-xl text-sm text-claude-dark focus:ring-1 ring-claude-accent outline-none border border-claude-gray transition-all placeholder:text-claude-muted/30" 
                   placeholder="nom@fournil.bj"
                 />
               </div>
@@ -145,7 +150,7 @@ export function LoginSignup() {
                       const val = e.target.value.replace(/\D/g, "").slice(0, 4);
                       mode === "login" ? setLoginPin(val) : setSignupPin(val);
                     }}
-                    className="w-full pl-9 pr-10 py-2.5 bg-claude-bg rounded-xl text-sm text-center tracking-[0.4em] font-bold focus:ring-1 ring-claude-accent outline-none border border-claude-gray" 
+                    className="w-full pl-9 pr-10 py-2.5 bg-claude-bg rounded-xl text-sm text-center tracking-[0.4em] font-bold text-claude-dark focus:ring-1 ring-claude-accent outline-none border border-claude-gray" 
                     placeholder="****"
                   />
                   <button onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-claude-muted hover:text-claude-dark" type="button">
@@ -161,7 +166,7 @@ export function LoginSignup() {
                     type={showPassword ? "text" : "password"} 
                     value={signupPinConfirm} 
                     onChange={(e) => setSignupPinConfirm(e.target.value.replace(/\D/g, "").slice(0, 4))}
-                    className="w-full py-2.5 bg-claude-bg rounded-xl text-sm text-center tracking-[0.4em] font-bold focus:ring-1 ring-claude-accent outline-none border border-claude-gray" 
+                    className="w-full py-2.5 bg-claude-bg rounded-xl text-sm text-center tracking-[0.4em] font-bold text-claude-dark focus:ring-1 ring-claude-accent outline-none border border-claude-gray" 
                     placeholder="****"
                   />
                 </div>
@@ -172,7 +177,9 @@ export function LoginSignup() {
               onClick={mode === "login" ? handleLogin : handleSignup} 
               disabled={loading} 
               className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-xs uppercase tracking-widest transition-all active:scale-[0.98] ${
-                mode === "login" ? "bg-claude-dark text-white" : "bg-claude-accent text-white"
+                mode === "login" 
+                  ? "bg-claude-dark text-claude-bg" // Bouton Chocolat Profond, Texte Crème
+                  : "bg-claude-accent text-white"   // Bouton Corail
               }`}
             >
               {loading ? "Calcul..." : <>{mode === "login" ? "Entrer au Fournil" : "Créer le Profil"} <ArrowRight size={14} /></>}

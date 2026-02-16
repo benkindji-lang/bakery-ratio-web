@@ -1,10 +1,10 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
-// Configuration du Viewport pour une application PWA native-like
+// Configuration du Viewport (Zéro Noir système)
 export const viewport: Viewport = {
-  // On utilise la couleur du mode sombre de Claude pour la barre système
-  themeColor: "#171717", 
+  // On utilise exactement le marron chocolat #231915 pour la barre système
+  themeColor: "#231915", 
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
@@ -18,7 +18,8 @@ export const metadata: Metadata = {
   keywords: ["Boulangerie", "Gestion", "Production", "Cotonou", "Bénin"],
   appleWebApp: {
     capable: true,
-    statusBarStyle: "black-translucent", // Permet au header sombre de passer sous la barre d'état iOS
+    // "default" permet d'utiliser la themeColor marron définie plus haut sur iOS
+    statusBarStyle: "default", 
     title: "BakeryPro",
   },
   formatDetection: {
@@ -33,21 +34,18 @@ export default function RootLayout({
 }>) {
   return (
     /**
-     * DARK MODE FORCE : 
-     * 1. class="dark" active le plugin Tailwind
-     * 2. style={{ colorScheme: 'dark' }} force les éléments natifs (scrollbar, inputs)
+     * DARK MODE CHOCOLAT FORCE : 
+     * colorScheme: 'dark' est maintenu pour les éléments système, 
+     * mais le CSS force le Marron.
      */
     <html lang="fr" className="dark" style={{ colorScheme: 'dark' }}>
       <head>
         <meta charSet="utf-8" />
-        {/* Suppression de la meta theme-color ici car gérée par l'objet viewport plus haut */}
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
       </head>
-      <body className="antialiased selection:bg-claude-accent/30">
-        {/* Note : On ne met pas bg-claude-bg ici car le plugin Tailwind 
-            l'applique déjà automatiquement au body via addBase. 
-        */}
+      {/* On force bg-claude-bg (Marron) et text-claude-dark (Crème) dès le body */}
+      <body className="antialiased selection:bg-claude-accent/30 bg-claude-bg text-claude-dark">
         {children}
       </body>
     </html>

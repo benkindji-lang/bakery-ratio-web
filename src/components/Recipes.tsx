@@ -1,36 +1,47 @@
 "use client";
 import { useBakeryStore } from "@/lib/store";
-import { BookOpen, Trash2, Clock } from "lucide-react";
+import { BookOpen, Trash2, Clock, ChevronRight } from "lucide-react";
 
 export function RecipesView() {
   const { recipes, loadRecipe, deleteRecipe } = useBakeryStore();
 
   return (
-    <div className="p-4 space-y-4 animate-in slide-in-from-left duration-300">
-      <div className="flex items-center gap-2 mb-6">
-        <BookOpen className="text-claude-accent" size={24} />
-        <h2 className="font-serif text-2xl font-bold text-claude-dark">Mon Livre</h2>
+    <div className="p-4 space-y-6 animate-in slide-in-from-left duration-300 pb-28">
+      <div className="flex items-center gap-3 px-2">
+        <div className="p-2 bg-claude-accent/10 rounded-lg">
+          <BookOpen className="text-claude-accent" size={24} />
+        </div>
+        <h2 className="font-serif text-3xl font-bold text-claude-dark tracking-tight">Mon Livre</h2>
       </div>
 
       {recipes.length === 0 ? (
-        <div className="py-20 text-center border-2 border-dashed border-claude-light rounded-3xl">
-          <BookOpen className="mx-auto mb-2 text-claude-light" size={48} />
-          <p className="text-claude-gray text-sm uppercase font-black tracking-widest">Aucune recette</p>
+        <div className="py-24 text-center border-2 border-dashed border-claude-gray rounded-[2.5rem] bg-claude-userBubble/30">
+          <BookOpen className="mx-auto mb-4 text-claude-muted/30" size={64} strokeWidth={1} />
+          <p className="text-claude-muted text-[10px] uppercase font-black tracking-[0.3em]">Le fournil est vide</p>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="grid gap-4">
           {recipes.map((r) => (
-            <div key={r.id} className="group bg-white border border-claude-light p-5 rounded-3xl flex items-center justify-between shadow-soft active:scale-[0.98] transition-all">
+            <div 
+              key={r.id} 
+              className="group bg-claude-userBubble border border-claude-gray p-6 rounded-[2rem] flex items-center justify-between shadow-soft active:scale-[0.98] transition-all border-l-4 border-l-claude-accent"
+            >
               <div className="flex-1 cursor-pointer" onClick={() => loadRecipe(r)}>
-                <h3 className="font-bold text-claude-dark text-lg">{r.name}</h3>
-                <div className="flex items-center gap-3 text-claude-gray text-2xs font-bold uppercase tracking-widest">
-                  <span>{r.total}g</span>
-                  <span className="flex items-center gap-1"><Clock size={10}/>{new Date(r.date).toLocaleDateString()}</span>
+                <h3 className="font-serif font-bold text-claude-dark text-xl mb-1 tracking-tight">{r.name}</h3>
+                <div className="flex items-center gap-4 text-claude-muted text-[10px] font-black uppercase tracking-widest">
+                  <span className="bg-claude-bg px-2 py-0.5 rounded text-claude-accent">{r.total}g</span>
+                  <span className="flex items-center gap-1.5"><Clock size={12} className="text-claude-accent"/> {new Date(r.date).toLocaleDateString()}</span>
                 </div>
               </div>
-              <button onClick={() => deleteRecipe(r.id)} className="p-3 text-claude-light hover:text-claude-error transition-colors">
-                <Trash2 size={18} />
-              </button>
+              <div className="flex items-center gap-2">
+                <button 
+                  onClick={() => deleteRecipe(r.id)} 
+                  className="p-3 text-claude-muted hover:text-claude-error hover:bg-claude-error/10 rounded-xl transition-all"
+                >
+                  <Trash2 size={20} />
+                </button>
+                <ChevronRight size={20} className="text-claude-accent opacity-50" />
+              </div>
             </div>
           ))}
         </div>
