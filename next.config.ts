@@ -9,12 +9,9 @@ const withPWA = withPWAInit({
   disable: process.env.NODE_ENV === "development",
 });
 
-const nextConfig = {
+const nextConfig: NextConfig = {
   reactStrictMode: true,
-  experimental: {
-    // On force le passage pour éviter l'erreur de type sur Next 16
-    turbo: {},
-  } as any, 
-} satisfies NextConfig;
+  // On ne met rien ici pour l'instant, le flag --webpack dans le script s'occupe de tout
+};
 
-export default withPWA(nextConfig as any);
+export default withPWA(nextConfig);
