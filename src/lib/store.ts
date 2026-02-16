@@ -3,6 +3,15 @@ import { persist } from 'zustand/middleware';
 
 export type TabType = 'labo' | 'recettes' | 'marche' | 'finance';
 
+// Correction : Export explicite pour corriger l'erreur 2305 dans Market.tsx
+export interface MarketPrices {
+  farinePrice: number;
+  beurrePrice: number;
+  sucrePrice: number;
+  sellingPrice: number;
+  yieldPerBatch: number;
+}
+
 export interface Recipe {
   id: string;
   name: string;
@@ -15,117 +24,115 @@ export interface Recipe {
   date: number;
 }
 
-export interface MarketPrices {
-  farinePrice: number;
-  beurrePrice: number;
-  sucrePrice: number;
-  sellingPrice: number;
-  yieldPerBatch: number;
-}
-
 interface BakeryState {
+  isLoggedIn: boolean;
+  pin: string;
   activeTab: TabType;
-  setActiveTab: (tab: TabType) => void;
-  // Labo
+  editingId: string | null;
   total: number;
   farine: number;
   beurre: number;
   sucre: number;
   sel: number;
   levure: number;
-  // Database & Market
   market: MarketPrices;
   recipes: Recipe[];
   // Actions
+  login: (pin: string) => boolean;
+  logout: () => void;
+  updatePin: (newPin: string) => void; // Correction 2339
+  setActiveTab: (tab: TabType) => void;
   updateFromTotal: (val: number) => void;
   updateFromFarine: (val: number) => void;
   updateMarket: (key: keyof MarketPrices, val: number) => void;
-  saveCurrentRecipe: (name: string) => void;
+  saveRecipe: (name: string) => void;
   deleteRecipe: (id: string) => void;
   loadRecipe: (recipe: Recipe) => void;
+  resetLabo: () => void;
   calculateProfit: () => { cost: number; revenue: number; profit: number };
 }
 
 export const useBakeryStore = create<BakeryState>()(
   persist(
     (set, get) => ({
+      isLoggedIn: false,
+      pin: "0000",
       activeTab: 'labo',
-      setActiveTab: (tab) => set({ activeTab: tab }),
+      editingId: null,
       total: 700,
       farine: 400,
       beurre: 200,
       sucre: 100,
       sel: 2,
       levure: 5,
-      market: {
-        farinePrice: 24000,
-        beurrePrice: 18000,
-        sucrePrice: 28000,
-        sellingPrice: 150,
-        yieldPerBatch: 10,
-      },
+      market: { farinePrice: 24000, beurrePrice: 18000, sucrePrice: 28000, sellingPrice: 150, yieldPerBatch: 10 },
       recipes: [],
+
+      login: (inputPin) => {
+        const success = inputPin === get().pin;
+        if (success) set({ isLoggedIn: true });
+        return success;
+      },
+      logout: () => set({ isLoggedIn: false }),
+      updatePin: (newPin) => set({ pin: newPin }),
+
+      setActiveTab: (tab) => set({ activeTab: tab }),
 
       updateFromTotal: (val) => {
         const v = Math.max(0, val);
-        const unit = v / 7;
-        const f = Math.round(unit * 4 * 10) / 10;
-        const b = Math.round(unit * 2 * 10) / 10;
+        const u = v / 7;
         set({ 
-          total: v, farine: f, beurre: b, 
-          sucre: Math.round((v - (f + b)) * 10) / 10,
-          sel: Math.round((v * (2/700)) * 10) / 10,
-          levure: Math.round((v * (5/700)) * 10) / 10
+          total: v, 
+          farine: Math.round(u * 4 * 10) / 10, 
+          beurre: Math.round(u * 2 * 10) / 10, 
+          sucre: Math.round(u * 1 * 10) / 10,
+          sel: Math.round((v * 0.0028) * 10) / 10,
+          levure: Math.round((v * 0.0071) * 10) / 10
         });
       },
 
       updateFromFarine: (val) => {
         const v = Math.max(0, val);
-        const unit = v / 4;
-        const t = Math.round(unit * 7 * 10) / 10;
-        const b = Math.round(unit * 2 * 10) / 10;
+        const u = v / 4;
+        const t = u * 7;
         set({ 
-          total: t, farine: v, beurre: b, 
-          sucre: Math.round((t - (v + b)) * 10) / 10,
-          sel: Math.round((t * (2/700)) * 10) / 10,
-          levure: Math.round((t * (5/700)) * 10) / 10
+          total: Math.round(t * 10) / 10, 
+          farine: v, 
+          beurre: Math.round(u * 2 * 10) / 10, 
+          sucre: Math.round(u * 1 * 10) / 10,
+          sel: Math.round((t * 0.0028) * 10) / 10,
+          levure: Math.round((t * 0.0071) * 10) / 10
         });
       },
 
-      updateMarket: (key, val) => set((state) => ({
-        market: { ...state.market, [key]: Math.max(0, val) }
-      })),
+      updateMarket: (key, val) => set((s) => ({ market: { ...s.market, [key]: val } })),
 
-      saveCurrentRecipe: (name) => {
+      saveRecipe: (name) => {
         const s = get();
-        const newR: Recipe = {
-          id: crypto.randomUUID(),
-          name: name || `Création ${s.recipes.length + 1}`,
-          total: s.total, farine: s.farine, beurre: s.beurre,
-          sucre: s.sucre, sel: s.sel, levure: s.levure, date: Date.now()
+        const id = s.editingId || crypto.randomUUID();
+        const newRecipe: Recipe = {
+          id,
+          name: name || "Nouvelle Recette",
+          total: s.total, farine: s.farine, beurre: s.beurre, sucre: s.sucre, sel: s.sel, levure: s.levure,
+          date: Date.now()
         };
-        set({ recipes: [newR, ...s.recipes] });
+        const recipes = s.editingId 
+          ? s.recipes.map(r => r.id === id ? newRecipe : r)
+          : [newRecipe, ...s.recipes];
+        set({ recipes, editingId: id });
       },
 
-      deleteRecipe: (id) => set((state) => ({
-        recipes: state.recipes.filter(r => r.id !== id)
-      })),
-
-      loadRecipe: (r) => set({
-        total: r.total, farine: r.farine, beurre: r.beurre,
-        sucre: r.sucre, sel: r.sel, levure: r.levure, activeTab: 'labo'
-      }),
+      deleteRecipe: (id) => set((s) => ({ recipes: s.recipes.filter(r => r.id !== id), editingId: s.editingId === id ? null : s.editingId })),
+      loadRecipe: (r) => set({ ...r, editingId: r.id, activeTab: 'labo' }),
+      resetLabo: () => set({ editingId: null, total: 700, farine: 400, beurre: 200, sucre: 100, sel: 2, levure: 5 }),
 
       calculateProfit: () => {
         const { farine, beurre, sucre, market } = get();
-        const cF = (farine * market.farinePrice) / 50000;
-        const cB = (beurre * market.beurrePrice) / 10000;
-        const cS = (sucre * market.sucrePrice) / 50000;
-        const totalCost = cF + cB + cS;
+        const cost = (farine * market.farinePrice / 50000) + (beurre * market.beurrePrice / 10000) + (sucre * market.sucrePrice / 50000);
         const revenue = market.yieldPerBatch * market.sellingPrice;
-        return { cost: Math.round(totalCost), revenue, profit: revenue - totalCost };
+        return { cost: Math.round(cost), revenue, profit: revenue - cost };
       }
     }),
-    { name: 'bakery-pro-v4' }
+    { name: 'bakery-pro-storage-v5' }
   )
 );
