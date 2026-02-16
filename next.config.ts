@@ -7,11 +7,16 @@ const withPWA = withPWAInit({
   register: true,
   skipWaiting: true,
   disable: process.env.NODE_ENV === "development",
+  buildExcludes: [/middleware-manifest\.json$/], // Évite les erreurs de cache sur Netlify
 });
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  // On ne met rien ici pour l'instant, le flag --webpack dans le script s'occupe de tout
+  webpack: (config) => {
+    // Force la résolution correcte pour les environnements Linux (Netlify)
+    config.resolve.fallback = { fs: false, net: false, tls: false };
+    return config;
+  },
 };
 
 export default withPWA(nextConfig);

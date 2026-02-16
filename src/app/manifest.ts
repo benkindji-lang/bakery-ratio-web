@@ -6,9 +6,9 @@ export default function manifest(): MetadataRoute.Manifest {
     short_name: 'BakeryPro',
     description: 'Outil professionnel de gestion de production et de rentabilité pour boulangers.',
     start_url: '/',
-    display: 'standalone', // Fait disparaître la barre d'URL du navigateur
-    background_color: '#F5F2ED', // La couleur de fond au lancement (Anthropic Beige)
-    theme_color: '#F5F2ED', // La couleur de la barre d'état du téléphone
+    display: 'standalone',
+    background_color: '#F5F2ED',
+    theme_color: '#F5F2ED',
     orientation: 'portrait',
     icons: [
       {
@@ -16,18 +16,13 @@ export default function manifest(): MetadataRoute.Manifest {
         sizes: 'any',
         type: 'image/x-icon',
       },
+      // Note : Ajoutez vos fichiers PNG dans /public/icons/ pour activer ces icônes
       {
-        src: '/icons/icon-192x192.png',
+        src: '/file.svg', 
         sizes: '192x192',
-        type: 'image/png',
-        purpose: 'any maskable' // 'maskable' permet à Android d'adapter la forme (rond, carré...)
-      },
-      {
-        src: '/icons/icon-512x512.png',
-        sizes: '512x512',
-        type: 'image/png',
-        purpose: 'any maskable'
-      },
+        type: 'image/svg+xml',
+        purpose: 'maskable'
+      }
     ],
   }
 }
