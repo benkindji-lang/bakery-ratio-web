@@ -3,7 +3,6 @@ import { persist } from 'zustand/middleware';
 
 export type TabType = 'labo' | 'recettes' | 'marche' | 'finance';
 
-// Correction : Export explicite pour corriger l'erreur 2305 dans Market.tsx
 export interface MarketPrices {
   farinePrice: number;
   beurrePrice: number;
@@ -40,7 +39,7 @@ interface BakeryState {
   // Actions
   login: (pin: string) => boolean;
   logout: () => void;
-  updatePin: (newPin: string) => void; // Correction 2339
+  updatePin: (newPin: string) => void;
   setActiveTab: (tab: TabType) => void;
   updateFromTotal: (val: number) => void;
   updateFromFarine: (val: number) => void;
@@ -55,7 +54,7 @@ interface BakeryState {
 export const useBakeryStore = create<BakeryState>()(
   persist(
     (set, get) => ({
-      isLoggedIn: false,
+      isLoggedIn: false, // Toujours false au démarrage à cause du partialize
       pin: "0000",
       activeTab: 'labo',
       editingId: null,
@@ -133,6 +132,13 @@ export const useBakeryStore = create<BakeryState>()(
         return { cost: Math.round(cost), revenue, profit: revenue - cost };
       }
     }),
-    { name: 'bakery-pro-storage-v5' }
+    { 
+      name: 'bakery-pro-storage-v5',
+      // SOLUTION INTÉGRALE : On filtre l'état pour ne pas sauver isLoggedIn
+      partialize: (state) => {
+        const { isLoggedIn, ...rest } = state;
+        return rest;
+      }
+    }
   )
 );

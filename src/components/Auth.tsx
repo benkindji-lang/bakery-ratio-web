@@ -8,6 +8,8 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
   const [pin, setPin] = useState("");
   const [error, setError] = useState(false);
 
+  // Si l'utilisateur est connecté, on affiche l'app
+  // Sinon, le reste du code (formulaire) s'affiche par défaut
   if (isLoggedIn) return <>{children}</>;
 
   const handleLogin = () => {
@@ -16,6 +18,10 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
       setPin("");
       setTimeout(() => setError(false), 1000);
     }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') handleLogin();
   };
 
   return (
@@ -30,10 +36,13 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
         <div className="space-y-4">
           <input
             type="password"
+            inputMode="numeric"
             value={pin}
             onChange={(e) => setPin(e.target.value)}
-            placeholder="Entrez votre code"
-            className={`w-full bg-white p-6 rounded-[2rem] text-center text-3xl tracking-[0.5em] focus:outline-none shadow-sm border-2 transition-all ${error ? 'border-red-400' : 'border-transparent focus:border-anthropic-accent'}`}
+            onKeyDown={handleKeyPress}
+            placeholder="Code PIN"
+            className={`w-full bg-white p-6 rounded-[2rem] text-center text-3xl tracking-[0.5em] focus:outline-none shadow-sm border-2 transition-all ${error ? 'border-red-400 animate-shake' : 'border-transparent focus:border-anthropic-accent'}`}
+            autoFocus
           />
           <button 
             onClick={handleLogin}
