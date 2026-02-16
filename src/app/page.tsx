@@ -26,7 +26,6 @@ export default function BakeryProApp() {
         <header className="p-4 flex justify-between items-center bg-white border-b border-stone-200 sticky top-0 z-20">
           <div>
             <h1 className="font-serif text-xl font-bold text-anthropic-charcoal">Boulangerie<span className="text-anthropic-accent">Pro</span></h1>
-            <p className="text-[9px] text-anthropic-muted font-black uppercase tracking-[0.3em]">Cotonou Lab v5</p>
           </div>
           <div className="flex gap-2">
             <button 
