@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useBakeryStore } from "@/lib/store";
-import { Lock, Mail, User, Eye, EyeOff, ArrowRight } from "lucide-react";
+import { Lock, Mail, User, Eye, EyeOff, ArrowRight, ShieldCheck } from "lucide-react";
 
 type AuthMode = "login" | "signup";
 
@@ -11,6 +11,8 @@ export function LoginSignup() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  
+  // States
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPin, setLoginPin] = useState("");
   const [signupName, setSignupName] = useState("");
@@ -21,11 +23,7 @@ export function LoginSignup() {
   const handleLogin = () => {
     setError("");
     if (!loginEmail.trim() || !loginPin.trim()) {
-      setError("Veuillez remplir tous les champs");
-      return;
-    }
-    if (loginPin.length !== 4 || !/^\d+$/.test(loginPin)) {
-      setError("Le PIN doit contenir 4 chiffres");
+      setError("Champs requis");
       return;
     }
     setLoading(true);
@@ -34,7 +32,7 @@ export function LoginSignup() {
         setLoginEmail("");
         setLoginPin("");
       } else {
-        setError("Email ou PIN incorrect");
+        setError("Identifiants invalides");
       }
       setLoading(false);
     }, 500);
@@ -43,183 +41,148 @@ export function LoginSignup() {
   const handleSignup = () => {
     setError("");
     if (!signupName.trim() || !signupEmail.trim() || !signupPin.trim()) {
-      setError("Veuillez remplir tous les champs");
-      return;
-    }
-    if (!signupEmail.includes("@")) {
-      setError("Email invalide");
-      return;
-    }
-    if (signupPin.length !== 4 || !/^\d+$/.test(signupPin)) {
-      setError("Le PIN doit contenir 4 chiffres");
+      setError("Champs requis");
       return;
     }
     if (signupPin !== signupPinConfirm) {
-      setError("Les PINs ne correspondent pas");
+      setError("PIN non identiques");
       return;
     }
     setLoading(true);
     setTimeout(() => {
       if (signup(signupEmail, signupName, signupPin)) {
-        setError("");
-        setSignupName("");
-        setSignupEmail("");
-        setSignupPin("");
-        setSignupPinConfirm("");
         setMode("login");
       } else {
-        setError("Cet email est déjà utilisé");
+        setError("Email déjà utilisé");
       }
       setLoading(false);
     }, 500);
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col items-center justify-center p-6 relative">
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-claude-accent/5 rounded-full blur-3xl" />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-claude-accent/5 rounded-full blur-3xl" />
-      </div>
-
-      <div className="w-full max-w-sm relative z-10">
-        <div className="text-center mb-12">
-          <div className="inline-block p-4 bg-claude-light rounded-full shadow-soft mb-6">
-            <Lock size={32} className="text-claude-accent" strokeWidth={1.5} />
+    <div className="min-h-screen bg-claude-bg flex flex-col items-center justify-center p-4">
+      <div className="w-full max-w-[340px]">
+        {/* Header Compact */}
+        <div className="text-center mb-6">
+          <div className="inline-flex p-3 bg-claude-gray/30 rounded-2xl mb-3 text-claude-accent">
+            <ShieldCheck size={28} strokeWidth={1.5} />
           </div>
-          <h1 className="font-serif text-4xl font-bold text-claude-dark mb-2">
-            Boulangerie<span className="text-claude-accent">Pro</span>
+          <h1 className="font-serif text-3xl font-bold text-claude-dark tracking-tighter">
+            Bakery<span className="text-claude-accent">Pro</span>
           </h1>
-          <p className="text-claude-gray text-sm uppercase tracking-[0.1em] font-semibold">
-            Gestion Professionnelle
+          <p className="text-claude-muted text-[10px] uppercase tracking-[0.2em] font-bold">
+            Cotonou Edition
           </p>
         </div>
 
-        <div className="flex gap-2 mb-8 bg-claude-light rounded-3xl p-1">
+        {/* Toggle Mode ultra-compact */}
+        <div className="flex bg-claude-gray/20 rounded-xl p-1 mb-4 border border-claude-gray">
           <button
             onClick={() => { setMode("login"); setError(""); }}
-            className={`flex-1 py-3 rounded-2xl font-bold uppercase text-2xs tracking-widest transition-all ${
-              mode === "login"
-                ? "bg-claude-accent text-white"
-                : "text-claude-gray hover:text-claude-dark"
+            className={`flex-1 py-1.5 rounded-lg text-[11px] font-bold uppercase transition-all ${
+              mode === "login" ? "bg-white text-claude-dark shadow-sm" : "text-claude-muted"
             }`}
           >
             Connexion
           </button>
           <button
             onClick={() => { setMode("signup"); setError(""); }}
-            className={`flex-1 py-3 rounded-2xl font-bold uppercase text-2xs tracking-widest transition-all ${
-              mode === "signup"
-                ? "bg-claude-accent text-white"
-                : "text-claude-gray hover:text-claude-dark"
+            className={`flex-1 py-1.5 rounded-lg text-[11px] font-bold uppercase transition-all ${
+              mode === "signup" ? "bg-white text-claude-dark shadow-sm" : "text-claude-muted"
             }`}
           >
             Inscription
           </button>
         </div>
 
-        <div className="bg-white rounded-3xl p-8 shadow-soft border border-claude-light">
+        <div className="bg-white rounded-2xl p-5 shadow-soft border border-claude-gray">
           {error && (
-            <div className="mb-6 p-4 bg-claude-error/10 border border-claude-error rounded-2xl">
-              <p className="text-claude-error text-sm font-bold">{error}</p>
+            <div className="mb-4 p-2.5 bg-claude-error/5 border border-claude-error/20 rounded-xl text-center">
+              <p className="text-claude-error text-[11px] font-bold">{error}</p>
             </div>
           )}
 
-          {mode === "login" ? (
-            <div className="space-y-5">
-              <div>
-                <label className="block text-2xs font-black text-claude-gray uppercase tracking-widest mb-2">Email</label>
+          <div className="space-y-3.5">
+            {mode === "signup" && (
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-claude-muted uppercase ml-1">Nom complet</label>
                 <div className="relative">
-                  <Mail size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-claude-gray" />
-                  <input
-                    type="email"
-                    value={loginEmail}
-                    onChange={(e) => setLoginEmail(e.target.value)}
-                    placeholder="vous@email.com"
-                    className="w-full pl-12 pr-4 py-3 bg-claude-light rounded-2xl focus:outline-none border-2 border-transparent focus:border-claude-accent transition-colors text-claude-dark placeholder:text-claude-gray/50"
-                    disabled={loading}
+                  <User size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-claude-muted" />
+                  <input 
+                    type="text" 
+                    value={signupName} 
+                    onChange={(e) => setSignupName(e.target.value)} 
+                    className="w-full pl-9 pr-4 py-2.5 bg-claude-bg rounded-xl text-sm focus:ring-1 ring-claude-accent outline-none border border-claude-gray transition-all" 
+                    placeholder="Artisan Boulanger"
                   />
                 </div>
               </div>
+            )}
 
-              <div>
-                <label className="block text-2xs font-black text-claude-gray uppercase tracking-widest mb-2">PIN (4 chiffres)</label>
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold text-claude-muted uppercase ml-1">Email professionnel</label>
+              <div className="relative">
+                <Mail size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-claude-muted" />
+                <input 
+                  type="email" 
+                  value={mode === "login" ? loginEmail : signupEmail} 
+                  onChange={(e) => mode === "login" ? setLoginEmail(e.target.value) : setSignupEmail(e.target.value)} 
+                  className="w-full pl-9 pr-4 py-2.5 bg-claude-bg rounded-xl text-sm focus:ring-1 ring-claude-accent outline-none border border-claude-gray transition-all" 
+                  placeholder="nom@fournil.bj"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-3.5">
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-claude-muted uppercase ml-1">Code PIN (4 chiffres)</label>
                 <div className="relative">
-                  <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-claude-gray" />
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    value={loginPin}
-                    onChange={(e) => setLoginPin(e.target.value.replace(/\D/g, "").slice(0, 4))}
-                    inputMode="numeric"
-                    placeholder="0000"
-                    className="w-full pl-12 pr-12 py-3 bg-claude-light rounded-2xl focus:outline-none border-2 border-transparent focus:border-claude-accent transition-colors text-claude-dark text-center tracking-[0.3em] font-bold placeholder:text-claude-gray/50"
-                    disabled={loading}
+                  <Lock size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-claude-muted" />
+                  <input 
+                    type={showPassword ? "text" : "password"} 
+                    value={mode === "login" ? loginPin : signupPin} 
+                    onChange={(e) => {
+                      const val = e.target.value.replace(/\D/g, "").slice(0, 4);
+                      mode === "login" ? setLoginPin(val) : setSignupPin(val);
+                    }}
+                    className="w-full pl-9 pr-10 py-2.5 bg-claude-bg rounded-xl text-sm text-center tracking-[0.4em] font-bold focus:ring-1 ring-claude-accent outline-none border border-claude-gray" 
+                    placeholder="****"
                   />
-                  <button onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-claude-gray hover:text-claude-dark transition-colors" type="button">
-                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  <button onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-claude-muted hover:text-claude-dark" type="button">
+                    {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
                   </button>
                 </div>
               </div>
 
-              <button onClick={handleLogin} disabled={loading} className="w-full bg-claude-accent text-white py-4 rounded-2xl font-bold uppercase tracking-widest active:scale-95 transition-all hover:brightness-110 disabled:opacity-50 flex items-center justify-center gap-2">
-                {loading ? "Connexion..." : <>Connexion <ArrowRight size={16} /></>}
-              </button>
-
-              <p className="text-center text-claude-gray text-xs">
-                Pas de compte ? <button onClick={() => { setMode("signup"); setError(""); }} className="text-claude-accent font-bold hover:underline">S'inscrire</button>
-              </p>
+              {mode === "signup" && (
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-claude-muted uppercase ml-1">Confirmation PIN</label>
+                  <input 
+                    type={showPassword ? "text" : "password"} 
+                    value={signupPinConfirm} 
+                    onChange={(e) => setSignupPinConfirm(e.target.value.replace(/\D/g, "").slice(0, 4))}
+                    className="w-full py-2.5 bg-claude-bg rounded-xl text-sm text-center tracking-[0.4em] font-bold focus:ring-1 ring-claude-accent outline-none border border-claude-gray" 
+                    placeholder="****"
+                  />
+                </div>
+              )}
             </div>
-          ) : (
-            <div className="space-y-5">
-              <div>
-                <label className="block text-2xs font-black text-claude-gray uppercase tracking-widest mb-2">Nom</label>
-                <div className="relative">
-                  <User size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-claude-gray" />
-                  <input type="text" value={signupName} onChange={(e) => setSignupName(e.target.value)} placeholder="Votre nom" className="w-full pl-12 pr-4 py-3 bg-claude-light rounded-2xl focus:outline-none border-2 border-transparent focus:border-claude-accent transition-colors text-claude-dark placeholder:text-claude-gray/50" disabled={loading} />
-                </div>
-              </div>
 
-              <div>
-                <label className="block text-2xs font-black text-claude-gray uppercase tracking-widest mb-2">Email</label>
-                <div className="relative">
-                  <Mail size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-claude-gray" />
-                  <input type="email" value={signupEmail} onChange={(e) => setSignupEmail(e.target.value)} placeholder="vous@email.com" className="w-full pl-12 pr-4 py-3 bg-claude-light rounded-2xl focus:outline-none border-2 border-transparent focus:border-claude-accent transition-colors text-claude-dark placeholder:text-claude-gray/50" disabled={loading} />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-2xs font-black text-claude-gray uppercase tracking-widest mb-2">PIN (4 chiffres)</label>
-                <div className="relative">
-                  <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-claude-gray" />
-                  <input type={showPassword ? "text" : "password"} value={signupPin} onChange={(e) => setSignupPin(e.target.value.replace(/\D/g, "").slice(0, 4))} inputMode="numeric" placeholder="0000" className="w-full pl-12 pr-12 py-3 bg-claude-light rounded-2xl focus:outline-none border-2 border-transparent focus:border-claude-accent transition-colors text-claude-dark text-center tracking-[0.3em] font-bold placeholder:text-claude-gray/50" disabled={loading} />
-                  <button onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-claude-gray hover:text-claude-dark transition-colors" type="button">
-                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                  </button>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-2xs font-black text-claude-gray uppercase tracking-widest mb-2">Confirmer PIN</label>
-                <div className="relative">
-                  <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-claude-gray" />
-                  <input type={showPassword ? "text" : "password"} value={signupPinConfirm} onChange={(e) => setSignupPinConfirm(e.target.value.replace(/\D/g, "").slice(0, 4))} inputMode="numeric" placeholder="0000" className="w-full pl-12 pr-12 py-3 bg-claude-light rounded-2xl focus:outline-none border-2 border-transparent focus:border-claude-accent transition-colors text-claude-dark text-center tracking-[0.3em] font-bold placeholder:text-claude-gray/50" disabled={loading} />
-                  <button onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-claude-gray hover:text-claude-dark transition-colors" type="button">
-                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                  </button>
-                </div>
-              </div>
-
-              <button onClick={handleSignup} disabled={loading} className="w-full bg-claude-success text-white py-4 rounded-2xl font-bold uppercase tracking-widest active:scale-95 transition-all hover:brightness-110 disabled:opacity-50 flex items-center justify-center gap-2">
-                {loading ? "Inscription..." : <>Créer Compte <ArrowRight size={16} /></>}
-              </button>
-
-              <p className="text-center text-claude-gray text-xs">
-                Vous avez un compte ? <button onClick={() => { setMode("login"); setError(""); }} className="text-claude-accent font-bold hover:underline">Se connecter</button>
-              </p>
-            </div>
-          )}
+            <button 
+              onClick={mode === "login" ? handleLogin : handleSignup} 
+              disabled={loading} 
+              className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-xs uppercase tracking-widest transition-all active:scale-[0.98] ${
+                mode === "login" ? "bg-claude-dark text-white" : "bg-claude-accent text-white"
+              }`}
+            >
+              {loading ? "Calcul..." : <>{mode === "login" ? "Entrer au Fournil" : "Créer le Profil"} <ArrowRight size={14} /></>}
+            </button>
+          </div>
         </div>
 
-        <p className="text-center text-2xs text-claude-gray mt-8 uppercase tracking-widest">🛡️ Sécurisé</p>
+        <p className="text-center text-[9px] text-claude-muted mt-6 uppercase tracking-[0.3em] font-medium opacity-60">
+          Système Sécurisé — Local Storage Encrypt
+        </p>
       </div>
     </div>
   );
