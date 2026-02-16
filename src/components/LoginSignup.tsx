@@ -12,7 +12,7 @@ export function LoginSignup() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   
-  // States groupés
+  // States
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPin, setLoginPin] = useState("");
   const [signupName, setSignupName] = useState("");
@@ -20,29 +20,25 @@ export function LoginSignup() {
   const [signupPin, setSignupPin] = useState("");
   const [signupPinConfirm, setSignupPinConfirm] = useState("");
 
-  const handleLogin = async (e?: React.FormEvent) => {
-    e?.preventDefault();
+  const handleLogin = () => {
     setError("");
     if (!loginEmail.trim() || !loginPin.trim()) {
       setError("Champs requis");
       return;
     }
     setLoading(true);
-    
-    // Feedback tactile/visuel pour l'artisan
-    await new Promise(r => setTimeout(r, 600));
-    
-    if (login(loginEmail, loginPin)) {
-      setLoginEmail("");
-      setLoginPin("");
-    } else {
-      setError("Identifiants invalides");
+    setTimeout(() => {
+      if (login(loginEmail, loginPin)) {
+        setLoginEmail("");
+        setLoginPin("");
+      } else {
+        setError("Identifiants invalides");
+      }
       setLoading(false);
-    }
+    }, 500);
   };
 
-  const handleSignup = async (e?: React.FormEvent) => {
-    e?.preventDefault();
+  const handleSignup = () => {
     setError("");
     if (!signupName.trim() || !signupEmail.trim() || !signupPin.trim()) {
       setError("Champs requis");
@@ -53,28 +49,25 @@ export function LoginSignup() {
       return;
     }
     setLoading(true);
-
-    await new Promise(r => setTimeout(r, 600));
-
-    if (signup(signupEmail, signupName, signupPin)) {
-      setMode("login");
-      setError("Compte créé ! Connectez-vous.");
-    } else {
-      setError("Email déjà utilisé");
-    }
-    setLoading(false);
+    setTimeout(() => {
+      if (signup(signupEmail, signupName, signupPin)) {
+        setMode("login");
+      } else {
+        setError("Email déjà utilisé");
+      }
+      setLoading(false);
+    }, 500);
   };
 
   return (
-    <div className="min-h-screen bg-claude-bg text-claude-dark flex flex-col items-center justify-center p-4 transition-colors duration-500">
+    <div className="min-h-screen bg-claude-bg flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-[340px]">
-        
-        {/* Header - Utilise text-claude-dark qui est maintenant Marron/Chocolat */}
+        {/* Header Compact */}
         <div className="text-center mb-6">
-          <div className="inline-flex p-3 bg-claude-userBubble rounded-2xl mb-3 text-claude-accent border border-claude-gray shadow-soft">
+          <div className="inline-flex p-3 bg-claude-gray/30 rounded-2xl mb-3 text-claude-accent">
             <ShieldCheck size={28} strokeWidth={1.5} />
           </div>
-          <h1 className="font-serif text-3xl font-bold tracking-tighter text-claude-dark">
+          <h1 className="font-serif text-3xl font-bold text-claude-dark tracking-tighter">
             Bakery<span className="text-claude-accent">Pro</span>
           </h1>
           <p className="text-claude-muted text-[10px] uppercase tracking-[0.2em] font-bold">
@@ -82,143 +75,113 @@ export function LoginSignup() {
           </p>
         </div>
 
-        {/* Toggle Mode - Adapté à la palette Chocolat */}
-        <div className="flex bg-claude-userBubble rounded-xl p-1 mb-6 border border-claude-gray shadow-inner">
+        {/* Toggle Mode ultra-compact */}
+        <div className="flex bg-claude-gray/20 rounded-xl p-1 mb-4 border border-claude-gray">
           <button
             onClick={() => { setMode("login"); setError(""); }}
-            className={`flex-1 py-2 rounded-lg text-[11px] font-bold uppercase transition-all ${
-              mode === "login" 
-                ? "bg-claude-bg text-claude-dark shadow-sm" 
-                : "text-claude-muted hover:text-claude-dark"
+            className={`flex-1 py-1.5 rounded-lg text-[11px] font-bold uppercase transition-all ${
+              mode === "login" ? "bg-white text-claude-dark shadow-sm" : "text-claude-muted"
             }`}
           >
             Connexion
           </button>
           <button
             onClick={() => { setMode("signup"); setError(""); }}
-            className={`flex-1 py-2 rounded-lg text-[11px] font-bold uppercase transition-all ${
-              mode === "signup" 
-                ? "bg-claude-bg text-claude-dark shadow-sm" 
-                : "text-claude-muted hover:text-claude-dark"
+            className={`flex-1 py-1.5 rounded-lg text-[11px] font-bold uppercase transition-all ${
+              mode === "signup" ? "bg-white text-claude-dark shadow-sm" : "text-claude-muted"
             }`}
           >
             Inscription
           </button>
         </div>
 
-        {/* Card Formulaire - Fond Chocolat Clair / Beige Sombre */}
-        <div className="bg-claude-userBubble rounded-[2rem] p-7 shadow-soft border border-claude-gray">
+        <div className="bg-white rounded-2xl p-5 shadow-soft border border-claude-gray">
           {error && (
-            <div className={`mb-5 p-3 rounded-xl text-center border animate-in fade-in zoom-in duration-300 ${
-              error.includes("créé") 
-                ? "bg-green-500/10 border-green-500/20 text-green-600" 
-                : "bg-claude-error/10 border-claude-error/20 text-claude-error"
-            }`}>
-              <p className="text-[10px] font-black uppercase tracking-widest">{error}</p>
+            <div className="mb-4 p-2.5 bg-claude-error/5 border border-claude-error/20 rounded-xl text-center">
+              <p className="text-claude-error text-[11px] font-bold">{error}</p>
             </div>
           )}
 
-          <form onSubmit={mode === "login" ? handleLogin : handleSignup} className="space-y-5">
+          <div className="space-y-3.5">
             {mode === "signup" && (
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-bold text-claude-muted uppercase ml-1">Nom de la Boulangerie</label>
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-claude-muted uppercase ml-1">Nom complet</label>
                 <div className="relative">
                   <User size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-claude-muted" />
                   <input 
                     type="text" 
-                    required
                     value={signupName} 
                     onChange={(e) => setSignupName(e.target.value)} 
-                    className="w-full pl-10 pr-4 py-3.5 bg-claude-bg border border-claude-gray rounded-2xl text-sm text-claude-dark focus:ring-2 ring-claude-accent/20 outline-none transition-all placeholder:text-claude-muted/40" 
+                    className="w-full pl-9 pr-4 py-2.5 bg-claude-bg rounded-xl text-sm focus:ring-1 ring-claude-accent outline-none border border-claude-gray transition-all" 
                     placeholder="Artisan Boulanger"
                   />
                 </div>
               </div>
             )}
 
-            <div className="space-y-1.5">
-              <label className="text-[10px] font-bold text-claude-muted uppercase ml-1">Email Fournil</label>
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold text-claude-muted uppercase ml-1">Email professionnel</label>
               <div className="relative">
                 <Mail size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-claude-muted" />
                 <input 
                   type="email" 
-                  required
                   value={mode === "login" ? loginEmail : signupEmail} 
                   onChange={(e) => mode === "login" ? setLoginEmail(e.target.value) : setSignupEmail(e.target.value)} 
-                  className="w-full pl-10 pr-4 py-3.5 bg-claude-bg border border-claude-gray rounded-2xl text-sm text-claude-dark focus:ring-2 ring-claude-accent/20 outline-none transition-all placeholder:text-claude-muted/40" 
+                  className="w-full pl-9 pr-4 py-2.5 bg-claude-bg rounded-xl text-sm focus:ring-1 ring-claude-accent outline-none border border-claude-gray transition-all" 
                   placeholder="nom@fournil.bj"
                 />
               </div>
             </div>
 
-            <div className="space-y-1.5">
-              <label className="text-[10px] font-bold text-claude-muted uppercase ml-1">Code PIN (4 chiffres)</label>
-              <div className="relative">
-                <Lock size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-claude-muted" />
-                <input 
-                  type={showPassword ? "text" : "password"} 
-                  inputMode="numeric"
-                  required
-                  pattern="[0-9]{4}"
-                  value={mode === "login" ? loginPin : signupPin} 
-                  onChange={(e) => {
-                    const val = e.target.value.replace(/\D/g, "").slice(0, 4);
-                    mode === "login" ? setLoginPin(val) : setSignupPin(val);
-                  }}
-                  className="w-full pl-10 pr-12 py-3.5 bg-claude-bg border border-claude-gray rounded-2xl text-sm text-center tracking-[0.8em] font-black text-claude-dark focus:ring-2 ring-claude-accent/20 outline-none transition-all" 
-                  placeholder="••••"
-                />
-                <button 
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)} 
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-claude-muted hover:text-claude-accent p-1 transition-colors"
-                >
-                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                </button>
+            <div className="grid grid-cols-1 gap-3.5">
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-claude-muted uppercase ml-1">Code PIN (4 chiffres)</label>
+                <div className="relative">
+                  <Lock size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-claude-muted" />
+                  <input 
+                    type={showPassword ? "text" : "password"} 
+                    value={mode === "login" ? loginPin : signupPin} 
+                    onChange={(e) => {
+                      const val = e.target.value.replace(/\D/g, "").slice(0, 4);
+                      mode === "login" ? setLoginPin(val) : setSignupPin(val);
+                    }}
+                    className="w-full pl-9 pr-10 py-2.5 bg-claude-bg rounded-xl text-sm text-center tracking-[0.4em] font-bold focus:ring-1 ring-claude-accent outline-none border border-claude-gray" 
+                    placeholder="****"
+                  />
+                  <button onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-claude-muted hover:text-claude-dark" type="button">
+                    {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+                  </button>
+                </div>
               </div>
+
+              {mode === "signup" && (
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-claude-muted uppercase ml-1">Confirmation PIN</label>
+                  <input 
+                    type={showPassword ? "text" : "password"} 
+                    value={signupPinConfirm} 
+                    onChange={(e) => setSignupPinConfirm(e.target.value.replace(/\D/g, "").slice(0, 4))}
+                    className="w-full py-2.5 bg-claude-bg rounded-xl text-sm text-center tracking-[0.4em] font-bold focus:ring-1 ring-claude-accent outline-none border border-claude-gray" 
+                    placeholder="****"
+                  />
+                </div>
+              )}
             </div>
 
-            {mode === "signup" && (
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-bold text-claude-muted uppercase ml-1">Confirmation PIN</label>
-                <input 
-                  type={showPassword ? "text" : "password"} 
-                  inputMode="numeric"
-                  required
-                  value={signupPinConfirm} 
-                  onChange={(e) => setSignupPinConfirm(e.target.value.replace(/\D/g, "").slice(0, 4))}
-                  className="w-full py-3.5 bg-claude-bg border border-claude-gray rounded-2xl text-sm text-center tracking-[0.8em] font-black text-claude-dark focus:ring-2 ring-claude-accent/20 outline-none transition-all" 
-                  placeholder="••••"
-                />
-              </div>
-            )}
-
             <button 
-              type="submit"
+              onClick={mode === "login" ? handleLogin : handleSignup} 
               disabled={loading} 
-              className={`w-full flex items-center justify-center gap-3 py-4 rounded-2xl font-bold text-xs uppercase tracking-[0.2em] transition-all active:scale-[0.96] disabled:opacity-50 shadow-soft ${
-                mode === "login" 
-                  ? "bg-claude-dark text-claude-bg hover:brightness-110" 
-                  : "bg-claude-accent text-white hover:brightness-105"
+              className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-xs uppercase tracking-widest transition-all active:scale-[0.98] ${
+                mode === "login" ? "bg-claude-dark text-white" : "bg-claude-accent text-white"
               }`}
             >
-              {loading ? (
-                <span className="flex items-center gap-2">
-                  <span className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                  Calcul...
-                </span>
-              ) : (
-                <>
-                  {mode === "login" ? "Ouvrir le Fournil" : "Créer le Profil"} 
-                  <ArrowRight size={16} />
-                </>
-              )}
+              {loading ? "Calcul..." : <>{mode === "login" ? "Entrer au Fournil" : "Créer le Profil"} <ArrowRight size={14} /></>}
             </button>
-          </form>
+          </div>
         </div>
 
-        <p className="text-center text-[9px] text-claude-muted mt-8 uppercase tracking-[0.4em] font-medium opacity-40">
-          Artisanat Numérique — Cotonou 2026
+        <p className="text-center text-[9px] text-claude-muted mt-6 uppercase tracking-[0.3em] font-medium opacity-60">
+          Système Sécurisé — Local Storage Encrypt
         </p>
       </div>
     </div>
