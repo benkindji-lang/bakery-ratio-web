@@ -4,7 +4,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: 'BakeryPro Cotonou Edition',
     short_name: 'BakeryPro',
-    description: 'Outil professionnel de gestion de production et de rentabilité pour boulangers.',
+    description: 'Outil professionnel de gestion de production pour boulangers.',
     start_url: '/',
     display: 'standalone',
     background_color: '#F5F2ED',
@@ -16,9 +16,8 @@ export default function manifest(): MetadataRoute.Manifest {
         sizes: 'any',
         type: 'image/x-icon',
       },
-      // Note : Ajoutez vos fichiers PNG dans /public/icons/ pour activer ces icônes
       {
-        src: '/file.svg', 
+        src: '/file.svg', // Utilise un fichier existant pour ne pas faire planter le build
         sizes: '192x192',
         type: 'image/svg+xml',
         purpose: 'maskable'
