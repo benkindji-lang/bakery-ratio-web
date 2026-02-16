@@ -2,6 +2,7 @@ import { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
+    id: 'bakery-pro-cotonou', // Blindage contre les conflits d'installation
     name: 'BakeryPro Cotonou Edition',
     short_name: 'BakeryPro',
     description: 'Outil professionnel de gestion de production pour boulangers.',
@@ -17,11 +18,17 @@ export default function manifest(): MetadataRoute.Manifest {
         type: 'image/x-icon',
       },
       {
-        src: '/file.svg', // Utilise un fichier existant pour ne pas faire planter le build
+        src: '/file.svg',
         sizes: '192x192',
         type: 'image/svg+xml',
-        purpose: 'maskable'
-      }
+        purpose: 'maskable',
+      },
+      {
+        src: '/window.svg', // Utilisation d'un autre fichier existant pour varier si besoin
+        sizes: '512x512',
+        type: 'image/svg+xml',
+        purpose: 'any',
+      },
     ],
-  }
+  };
 }
