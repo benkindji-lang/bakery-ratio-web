@@ -1,65 +1,105 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useBakeryStore } from "@/lib/store";
+import { useEffect, useState } from "react";
+import { Beaker, Info, Printer } from "lucide-react";
+
+export default function BakeryRatioApp() {
+  const store = useBakeryStore();
+  const [mounted, setMounted] = useState(false);
+
+  // Blindage contre les erreurs d'hydratation (Next.js + Zustand Persist)
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <main className="min-h-screen bg-[#F5F2ED] text-[#1D1C16] p-6 md:p-12 font-sans">
+      <div className="max-w-2xl mx-auto space-y-10">
+        
+        <header className="space-y-2">
+          <h1 className="text-4xl md:text-5xl font-serif font-medium tracking-tight">
+            BakeryRatio <span className="text-[#D97706]">4:2:1</span>
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="text-[#6B6A65] text-lg font-light">
+            Calculateur de précision pour pâtisserie.
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+        </header>
+
+        <section className="space-y-6">
+          <div className="bg-white border border-black/5 rounded-[2rem] p-8 shadow-sm">
+            <label className="block text-xs font-bold uppercase tracking-[0.2em] text-[#6B6A65] mb-4">
+              Masse Totale Souhaitée (g)
+            </label>
+            <input
+              type="number"
+              value={store.total}
+              onChange={(e) => store.updateFromTotal(Number(e.target.value))}
+              className="w-full bg-transparent text-6xl font-serif focus:outline-none border-b border-black/10 pb-2"
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="bg-white border border-black/5 rounded-[1.5rem] p-6">
+              <span className="text-xs font-bold text-[#6B6A65] uppercase">Farine (Base 4)</span>
+              <div className="flex items-end gap-2 mt-2">
+                <input 
+                  type="number" 
+                  value={store.farine}
+                  onChange={(e) => store.updateFromFarine(Number(e.target.value))}
+                  className="text-3xl font-serif w-full focus:outline-none"
+                />
+                <span className="text-[#6B6A65] pb-1">g</span>
+              </div>
+            </div>
+
+            <IngredientCard label="Beurre (Base 2)" value={store.beurre} color="bg-[#FFF9F0]" />
+            <IngredientCard label="Sucre (Base 1)" value={store.sucre} color="bg-stone-50" />
+          </div>
+        </section>
+
+        <section className="bg-[#1D1C16] text-[#F5F2ED] rounded-[2rem] p-8 space-y-6">
+          <div className="flex items-center gap-2 border-b border-white/10 pb-4">
+            <Beaker size={20} className="text-[#D97706]" />
+            <h2 className="text-xl font-serif">Additifs Indispensables</h2>
+          </div>
+          <div className="grid grid-cols-2 gap-8">
+            <div>
+              <p className="text-white/40 text-xs uppercase tracking-widest mb-1">Sel</p>
+              <p className="text-2xl font-serif">{store.sel} g</p>
+            </div>
+            <div>
+              <p className="text-white/40 text-xs uppercase tracking-widest mb-1">Levure</p>
+              <p className="text-2xl font-serif">{store.levure} g</p>
+            </div>
+          </div>
+          <div className="pt-4 flex items-start gap-3 text-sm text-white/30 italic">
+            <Info size={16} className="shrink-0 mt-1" />
+            <p>Le sucre est ajusté mathématiquement pour garantir l'intégrité de la masse totale (Zéro perte d'arrondi).</p>
+          </div>
+        </section>
+
+        <footer className="flex justify-center">
+          <button 
+            onClick={() => window.print()}
+            className="flex items-center gap-2 px-8 py-3 bg-[#1D1C16] text-white rounded-full hover:opacity-90 transition-transform active:scale-95"
           >
-            Documentation
-          </a>
-        </div>
-      </main>
+            <Printer size={18} />
+            Imprimer la fiche
+          </button>
+        </footer>
+      </div>
+    </main>
+  );
+}
+
+function IngredientCard({ label, value, color }: { label: string, value: number, color: string }) {
+  return (
+    <div className={`${color} border border-black/5 rounded-[1.5rem] p-6`}>
+      <span className="text-xs font-bold text-[#6B6A65] uppercase">{label}</span>
+      <p className="text-3xl font-serif mt-2">{value} <span className="text-sm font-sans text-[#6B6A65]">g</span></p>
     </div>
   );
 }
